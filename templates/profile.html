@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Мой профиль — Tabys{% endblock %}
+
+{% block content %}
+
+<section class="page-intro page-intro--profile">
+  <div class="container">
+    <div class="page-intro-inner">
+      <p class="section-label">Личный кабинет</p>
+      <h1 class="page-intro-title">Мой профиль</h1>
+      <p class="page-intro-sub">
+        Управляйте своим профилем, отслеживайте опубликованные заказы и следите за своими откликами.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section class="profile-page-section">
+  <div class="container">
+
+    <div class="profile-summary-card">
+      <div class="profile-summary-main">
+
+        <div class="profile-summary-avatar-wrap">
+          {% if profile.avatar %}
+            <img src="{{ profile.avatar.url }}" alt="{{ profile.user.username }}" class="profile-summary-avatar">
+          {% else %}
+            <div class="profile-summary-avatar profile-summary-avatar--placeholder">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="profile-summary-content">
+          <div class="profile-summary-top">
+            <div>
+              <h2 class="profile-summary-name">
+                {% if profile.full_name %}
+                  {{ profile.full_name }}
+                {% else %}
+                  {{ profile.user.username }}
+                {% endif %}
+              </h2>
+
+              <div class="profile-summary-meta">
+                <span class="profile-meta-pill">@{{ profile.user.username }}</span>
+                <span class="profile-meta-pill">{{ profile.user.get_role_display }}</span>
+
+                {% if profile.city %}
+                  <span class="profile-meta-pill">{{ profile.city }}</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <a href="{% url 'edit_profile' %}" class="btn btn-primary">Редактировать профиль</a>
+          </div>
+
+          <div class="profile-summary-info-grid">
+            <div class="profile-info-box">
+              <p class="profile-info-label">Email</p>
+              <p class="profile-info-value">{{ profile.user.email }}</p>
+            </div>
+
+            <div class="profile-info-box">
+              <p class="profile-info-label">Роль на платформе</p>
+              <p class="profile-info-value">{{ profile.user.get_role_display }}</p>
+            </div>
+          </div>
+
+          <div class="profile-about-card">
+            <p class="profile-info-label">О себе</p>
+            {% if profile.about %}
+              <p class="profile-about-text">{{ profile.about }}</p>
+            {% else %}
+              <p class="profile-about-empty">
+                Пока описание не заполнено. Добавьте информацию о себе, навыках и опыте, чтобы профиль выглядел сильнее.
+              </p>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="profile-stats-grid">
+      <div class="profile-stat-card">
+        <p class="profile-stat-label">Мои заказы</p>
+        <p class="profile-stat-value">{{ my_orders|length }}</p>
+        <p class="profile-stat-hint">Опубликованные проекты</p>
+      </div>
+
+      <div class="profile-stat-card">
+        <p class="profile-stat-label">Мои отклики</p>
+        <p class="profile-stat-value">{{ my_responses|length }}</p>
+        <p class="profile-stat-hint">Активность исполнителя</p>
+      </div>
+
+      <div class="profile-stat-card">
+        <p class="profile-stat-label">Тип аккаунта</p>
+        <p class="profile-stat-value profile-stat-value--small">{{ profile.user.get_role_display }}</p>
+        <p class="profile-stat-hint">Текущая роль на Tabys</p>
+      </div>
+    </div>
+
+    <div class="profile-sections-layout">
+
+      <section class="profile-content-section">
+        <div class="profile-section-header">
+          <div>
+            <p class="section-label">Публикации</p>
+            <h3 class="profile-section-title">Мои заказы</h3>
+          </div>
+          <a href="{% url 'create_order' %}" class="btn btn-outline">Создать заказ</a>
+        </div>
+
+        {% if my_orders %}
+          <div class="profile-card-list">
+            {% for order in my_orders %}
+              <article class="profile-order-card">
+                <div class="profile-order-card-top">
+                  <div>
+                    <h4 class="profile-card-title">
+                      <a href="{% url 'order_detail' order.id %}">{{ order.title }}</a>
+                    </h4>
+                    <div class="profile-card-badges">
+                      <span class="status-badge">{{ order.get_status_display }}</span>
+                      <span class="soft-badge">{{ order.responses.count }} откликов</span>
+                    </div>
+                  </div>
+                </div>
+
+                <p class="profile-card-desc">{{ order.description|truncatechars:180 }}</p>
+
+                <div class="profile-card-meta">
+                  {% if order.budget %}
+                    <div class="profile-meta-item">
+                      <span class="profile-meta-key">Бюджет</span>
+                      <span class="profile-meta-val">{{ order.budget }} ₸</span>
+                    </div>
+                  {% else %}
+                    <div class="profile-meta-item">
+                      <span class="profile-meta-key">Бюджет</span>
+                      <span class="profile-meta-val">Не указан</span>
+                    </div>
+                  {% endif %}
+
+                  <div class="profile-meta-item">
+                    <span class="profile-meta-key">Создан</span>
+                    <span class="profile-meta-val">{{ order.created_at|date:"d.m.Y" }}</span>
+                  </div>
+                </div>
+
+                <div class="profile-card-actions">
+                  <a href="{% url 'order_detail' order.id %}" class="btn btn-primary btn-sm">Открыть заказ</a>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="profile-empty-card">
+            <div class="profile-empty-icon">✦</div>
+            <h4>Пока нет опубликованных заказов</h4>
+            <p>
+              Создайте первый проект, чтобы начать получать отклики от исполнителей.
+            </p>
+            <a href="{% url 'create_order' %}" class="btn btn-primary">Создать заказ</a>
+          </div>
+        {% endif %}
+      </section>
+
+      <section class="profile-content-section">
+        <div class="profile-section-header">
+          <div>
+            <p class="section-label">Активность</p>
+            <h3 class="profile-section-title">Мои отклики</h3>
+          </div>
+          <a href="{% url 'jobs' %}" class="btn btn-outline">Смотреть заказы</a>
+        </div>
+
+        {% if my_responses %}
+          <div class="profile-card-list">
+            {% for response in my_responses %}
+              <article class="profile-response-card">
+                <div class="profile-order-card-top">
+                  <div>
+                    <h4 class="profile-card-title">
+                      <a href="{% url 'order_detail' response.order.id %}">{{ response.order.title }}</a>
+                    </h4>
+                    <p class="profile-response-owner">Заказчик: {{ response.order.owner.username }}</p>
+                  </div>
+
+                  <div class="profile-card-badges">
+                    <span class="status-badge">{{ response.get_status_display }}</span>
+                  </div>
+                </div>
+
+                <p class="profile-card-desc">{{ response.text|truncatechars:180 }}</p>
+
+                <div class="profile-card-meta">
+                  {% if response.price %}
+                    <div class="profile-meta-item">
+                      <span class="profile-meta-key">Моя цена</span>
+                      <span class="profile-meta-val">{{ response.price }} ₸</span>
+                    </div>
+                  {% else %}
+                    <div class="profile-meta-item">
+                      <span class="profile-meta-key">Моя цена</span>
+                      <span class="profile-meta-val">Не указана</span>
+                    </div>
+                  {% endif %}
+
+                  <div class="profile-meta-item">
+                    <span class="profile-meta-key">Дата отклика</span>
+                    <span class="profile-meta-val">{{ response.created_at|date:"d.m.Y" }}</span>
+                  </div>
+                </div>
+
+                <div class="profile-card-actions">
+                  <a href="{% url 'order_detail' response.order.id %}" class="btn btn-primary btn-sm">Перейти к заказу</a>
+                </div>
+              </article>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div class="profile-empty-card">
+            <div class="profile-empty-icon">◎</div>
+            <h4>Вы ещё не откликались на заказы</h4>
+            <p>
+              Перейдите в каталог заданий и найдите проекты, которые подходят вам по навыкам и бюджету.
+            </p>
+            <a href="{% url 'jobs' %}" class="btn btn-primary">Найти заказы</a>
+          </div>
+        {% endif %}
+      </section>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

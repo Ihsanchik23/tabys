@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Новый заказ — Tabys{% endblock %}
+
+{% block content %}
+
+<section class="page-intro page-intro--form">
+  <div class="container">
+    <div class="page-intro-inner page-intro-inner--narrow">
+      <p class="section-label">Новый заказ</p>
+      <h1 class="page-intro-title">Опишите задачу</h1>
+      <p class="page-intro-sub">Чётко сформулированное задание получает в 3× больше откликов от качественных специалистов</p>
+    </div>
+  </div>
+</section>
+
+<section class="form-page-section">
+  <div class="container">
+    <div class="form-page-layout">
+
+      <div class="form-page-main">
+        <div class="form-big-card">
+          <div class="form-big-card-header">
+            <div class="form-step-badge">Шаг 1 из 1</div>
+            <h2>Детали заказа</h2>
+            <p>Заполните информацию о задании — это займёт не более 3 минут</p>
+          </div>
+
+          <form method="post" class="order-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+              <div class="form-error-banner">
+                {% for error in form.non_field_errors %}
+                  <p>{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <div class="form-fields-styled">
+              {{ form.as_p }}
+            </div>
+
+            <div class="form-submit-row">
+              <a href="{% url 'jobs' %}" class="btn btn-outline">Отмена</a>
+              <button type="submit" class="btn btn-primary btn-lg">
+                Опубликовать заказ →
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <aside class="form-page-sidebar">
+        <div class="form-tip-card">
+          <div class="form-tip-icon">💡</div>
+          <h4>Советы для хорошего заказа</h4>
+          <ul class="form-tip-list">
+            <li>Опишите задачу максимально подробно</li>
+            <li>Укажите реальный бюджет</li>
+            <li>Добавьте примеры или референсы</li>
+            <li>Укажите желаемые сроки</li>
+          </ul>
+        </div>
+
+        <div class="form-tip-card form-tip-card--info">
+          <div class="form-tip-stat">
+            <span class="fts-num">~48 мин</span>
+            <span class="fts-label">среднее время до первого отклика</span>
+          </div>
+          <div class="form-tip-stat">
+            <span class="fts-num">12 400+</span>
+            <span class="fts-label">активных исполнителей ждут вашего заказа</span>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

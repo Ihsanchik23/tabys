@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Вход — Tabys{% endblock %}
+
+{% block content %}
+
+<section class="auth-section">
+  <div class="auth-container">
+
+    <div class="auth-brand">
+      <a href="{% url 'home' %}" class="logo">
+        <span class="logo-icon">T</span>
+        <span class="logo-text">tabys</span>
+      </a>
+    </div>
+
+    <div class="auth-card">
+      <div class="auth-card-header">
+        <h1 class="auth-title">Добро пожаловать</h1>
+        <p class="auth-sub">Войдите, чтобы продолжить работу с платформой</p>
+      </div>
+
+      <form method="post" class="auth-form">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+          <div class="form-error-banner">
+            {% for error in form.non_field_errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <div class="auth-form-fields">
+          {{ form.as_p }}
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg auth-submit-btn">
+          Войти
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Нет аккаунта? <a href="{% url 'register' %}" class="auth-link">Зарегистрироваться</a></p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}

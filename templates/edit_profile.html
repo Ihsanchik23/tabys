@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Редактировать профиль — Tabys{% endblock %}
+
+{% block content %}
+
+<section class="page-intro page-intro--form">
+  <div class="container">
+    <div class="page-intro-inner page-intro-inner--narrow">
+      <p class="section-label">Мой профиль</p>
+      <h1 class="page-intro-title">Редактировать профиль</h1>
+      <p class="page-intro-sub">Заполненный профиль повышает доверие заказчиков и помогает получать больше откликов</p>
+    </div>
+  </div>
+</section>
+
+<section class="form-page-section">
+  <div class="container">
+    <div class="form-page-layout">
+
+      <div class="form-page-main">
+        <div class="form-big-card">
+          <div class="form-big-card-header">
+            <h2>Личные данные</h2>
+            <p>Информация о вас, которую видят заказчики и исполнители</p>
+          </div>
+
+          <form method="post" enctype="multipart/form-data" class="profile-form">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+              <div class="form-error-banner">
+                {% for error in form.non_field_errors %}
+                  <p>{{ error }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <div class="profile-form-avatar-row">
+              <div class="profile-avatar-placeholder">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+              <div class="profile-avatar-upload">
+                <p class="pau-label">Фото профиля</p>
+                <div class="form-fields-styled form-fields-styled--avatar">
+                  {{ form.avatar }}
+                </div>
+                <p class="pau-hint">JPG, PNG · Максимум 5 МБ</p>
+              </div>
+            </div>
+
+            <div class="form-fields-styled profile-fields">
+              <div class="profile-field-group">
+                <label class="profile-field-label">Полное имя</label>
+                {{ form.full_name }}
+                {% if form.full_name.errors %}
+                  <p class="field-error">{{ form.full_name.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+              <div class="profile-field-group">
+                <label class="profile-field-label">Город</label>
+                {{ form.city }}
+                {% if form.city.errors %}
+                  <p class="field-error">{{ form.city.errors.0 }}</p>
+                {% endif %}
+              </div>
+
+              <div class="profile-field-group profile-field-group--full">
+                <label class="profile-field-label">О себе</label>
+                {{ form.about }}
+                {% if form.about.errors %}
+                  <p class="field-error">{{ form.about.errors.0 }}</p>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="form-submit-row">
+              <a href="{% url 'home' %}" class="btn btn-outline">Отмена</a>
+              <button type="submit" class="btn btn-primary btn-lg">Сохранить изменения</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <aside class="form-page-sidebar">
+        <div class="form-tip-card">
+          <div class="form-tip-icon">✦</div>
+          <h4>Как выглядит хороший профиль</h4>
+          <ul class="form-tip-list">
+            <li>Реальное имя вызывает больше доверия</li>
+            <li>Фото профиля увеличивает отклики на 40%</li>
+            <li>Укажите город — заказчики ищут локальных специалистов</li>
+            <li>Напишите о своём опыте и специализации</li>
+          </ul>
+        </div>
+
+        <div class="form-tip-card form-tip-card--info">
+          <div class="profile-completeness">
+            <p class="pc-label">Заполненность профиля</p>
+            <div class="pc-bar">
+              <div class="pc-fill" style="width: 60%"></div>
+            </div>
+            <p class="pc-hint">Заполните все поля для максимального доверия</p>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

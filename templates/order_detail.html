@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ order.title }} — Tabys{% endblock %}
+
+{% block content %}
+
+<section class="detail-hero">
+  <div class="container">
+    <div class="detail-breadcrumb">
+      <a href="{% url 'jobs' %}">Заказы</a>
+      <span>›</span>
+      <span>{{ order.title|truncatechars:40 }}</span>
+    </div>
+  </div>
+</section>
+
+<section class="detail-section">
+  <div class="container">
+    <div class="detail-layout">
+
+      <!-- Main -->
+      <div class="detail-main">
+        <div class="detail-card">
+          <div class="detail-card-header">
+            <span class="job-status {% if order.status == 'open' %}job-status--open{% elif order.status == 'in_progress' %}job-status--inprogress{% else %}job-status--closed{% endif %}">
+              {{ order.get_status_display }}
+            </span>
+            <span class="detail-date">{{ order.created_at|date:"d M Y, H:i" }}</span>
+          </div>
+          <h1 class="detail-title">{{ order.title }}</h1>
+          <div class="detail-body">
+            <p>{{ order.description }}</p>
+          </div>
+        </div>
+
+        <!-- Responses -->
+        <div class="responses-block">
+          <div class="responses-block-header">
+            <h2>Отклики <span class="responses-count-badge">{{ responses|length }}</span></h2>
+          </div>
+
+          {% if responses %}
+            <div class="responses-list">
+              {% for resp in responses %}
+              <div class="response-card">
+                <div class="response-card-top">
+                  <div class="response-avatar">{{ resp.user.username|first|upper }}</div>
+                  <div class="response-meta">
+                    <p class="response-username">{{ resp.user.username }}</p>
+                    <p class="response-date">{{ resp.created_at|date:"d M Y" }}</p>
+                  </div>
+                  <div class="response-price-badge">₸ {{ resp.price }}</div>
+                  <span class="resp-status-badge resp-status-badge--{{ resp.status }}">{{ resp.get_status_display }}</span>
+                </div>
+                <p class="response-text">{{ resp.text }}</p>
+              </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="responses-empty">
+              <p>Откликов пока нет. Будьте первым!</p>
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Response form -->
+        {% if user.is_authenticated %}
+          {% if user.username == order.owner.username %}
+            <div class="owner-info-block">
+              <div class="owner-info-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              </div>
+              <div>
+                <p class="owner-info-title">Это ваш заказ</p>
+                <p class="owner-info-sub">Вы видите все отклики исполнителей. Выберите подходящего специалиста.</p>
+              </div>
+            </div>
+          {% elif user_response %}
+            <div class="already-responded-block">
+              <div class="ar-icon">✓</div>
+              <div>
+                <p class="ar-title">Вы уже отправили отклик</p>
+                <p class="ar-sub">Ваш отклик на рассмотрении у заказчика. Ожидайте ответа.</p>
+              </div>
+              <div class="ar-status">{{ user_response.get_status_display }}</div>
+            </div>
+          {% elif can_respond %}
+            <div class="respond-form-block">
+              <h2 class="respond-form-title">Откликнуться на заказ</h2>
+              <p class="respond-form-sub">Опишите ваш подход и укажите стоимость — заказчик ознакомится с вашим предложением</p>
+              <form method="post" class="respond-form">
+                {% csrf_token %}
+                <div class="form-fields-custom">
+                  {{ form.as_p }}
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg">Отправить отклик</button>
+              </form>
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="auth-prompt-block">
+            <p>Чтобы откликнуться на заказ — <a href="{% url 'login' %}">войдите</a> или <a href="{% url 'register' %}">зарегистрируйтесь</a></p>
+          </div>
+        {% endif %}
+
+      </div><!-- /detail-main -->
+
+      <!-- Sidebar -->
+      <aside class="detail-sidebar">
+        <div class="sidebar-card">
+          <p class="sidebar-card-label">Бюджет</p>
+          <p class="sidebar-budget">₸ {{ order.budget }}</p>
+        </div>
+
+        <div class="sidebar-card">
+          <p class="sidebar-card-label">Заказчик</p>
+          <div class="sidebar-owner">
+            <span class="sidebar-owner-av">{{ order.owner.username|first|upper }}</span>
+            <span class="sidebar-owner-name">{{ order.owner.username }}</span>
+          </div>
+        </div>
+
+        <div class="sidebar-card">
+          <p class="sidebar-card-label">Статус</p>
+          <span class="job-status {% if order.status == 'open' %}job-status--open{% elif order.status == 'in_progress' %}job-status--inprogress{% else %}job-status--closed{% endif %}">
+            {{ order.get_status_display }}
+          </span>
+        </div>
+
+        <div class="sidebar-card">
+          <p class="sidebar-card-label">Дата публикации</p>
+          <p class="sidebar-date-val">{{ order.created_at|date:"d M Y" }}</p>
+        </div>
+
+        <div class="sidebar-card sidebar-card--responses">
+          <p class="sidebar-card-label">Откликов</p>
+          <p class="sidebar-responses-num">{{ responses|length }}</p>
+        </div>
+
+        <a href="{% url 'jobs' %}" class="btn btn-outline sidebar-back-btn">← Все заказы</a>
+      </aside>
+
+    </div>
+  </div>
+</section>
+
+{% endblock %}

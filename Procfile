@@ -1,0 +1,1 @@
+web: gunicorn tabys.wsgi

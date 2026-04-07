@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Заказы — Tabys{% endblock %}
+
+{% block content %}
+
+<section class="page-intro">
+  <div class="container">
+    <div class="page-intro-inner">
+      <div class="page-intro-text">
+        <p class="section-label">Биржа заказов</p>
+        <h1 class="page-intro-title">Актуальные проекты</h1>
+        <p class="page-intro-sub">Найдите подходящий заказ среди сотен задач от проверенных заказчиков</p>
+      </div>
+      <div class="page-intro-actions">
+        {% if user.is_authenticated %}
+          <a href="{% url 'create_order' %}" class="btn btn-primary btn-lg">+ Разместить заказ</a>
+        {% else %}
+          <a href="{% url 'register' %}" class="btn btn-primary btn-lg">Начать бесплатно</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="jobs-page-section">
+  <div class="container">
+
+    {% if orders %}
+      <div class="jobs-page-meta">
+        <p class="jobs-page-count">Найдено заказов: <strong>{{ orders|length }}</strong></p>
+      </div>
+      <div class="jobs-list-grid">
+        {% for order in orders %}
+        <a href="{% url 'order_detail' order.id %}" class="job-list-card">
+          <div class="job-list-card-top">
+            <div class="job-header">
+              <span class="job-status {% if order.status == 'open' %}job-status--open{% elif order.status == 'in_progress' %}job-status--inprogress{% else %}job-status--closed{% endif %}">
+                {{ order.get_status_display }}
+              </span>
+              <span class="job-posted">{{ order.created_at|date:"d M Y" }}</span>
+            </div>
+            <h3 class="job-list-title">{{ order.title }}</h3>
+            <p class="job-list-desc">{{ order.description|truncatechars:160 }}</p>
+          </div>
+          <div class="job-list-footer">
+            <div class="job-list-meta">
+              <div class="jlm-item">
+                <span class="jlm-label">Бюджет</span>
+                <span class="jlm-val jlm-val--budget">₸ {{ order.budget }}</span>
+              </div>
+              <div class="jlm-item">
+                <span class="jlm-label">Заказчик</span>
+                <span class="jlm-val">{{ order.owner.username }}</span>
+              </div>
+              <div class="jlm-item jlm-item--right">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                <span>{{ order.responses.count }} откл.</span>
+              </div>
+            </div>
+            <span class="job-list-link">Подробнее →</span>
+          </div>
+        </a>
+        {% endfor %}
+      </div>
+
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        </div>
+        <h3>Заказов пока нет</h3>
+        <p>Будьте первым — разместите задание и получите отклики от специалистов</p>
+        <a href="{% url 'create_order' %}" class="btn btn-primary">Создать первый заказ</a>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+{% endblock %}
